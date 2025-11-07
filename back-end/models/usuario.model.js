@@ -28,7 +28,11 @@ const schemaUsuario = new mongoose.Schema({
     contrasenia: {
         type: String,
         required: true
-    }
+    },
+    certificaciones: [{
+        type: Schema.Types.ObjectId,
+        ref: "Certificacion"
+    }]
 });
 
 const Usuario = mongoose.model("Usuario", schemaUsuario);

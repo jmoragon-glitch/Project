@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router(); // Crear la señal
 const Usuario = require("../models/usuario.model");
+const Certificacion = require("../models/certificacion.model");
 
 // Rutas
 
-// Post: Crear / enviar datos al servidor
+// Post: Crear / enviar datos a la base de datos
 router.post("/", async(req, res) => {
     const{correo, nombre, cedula, celular, contrasenia} = req.body;
 
@@ -26,7 +27,7 @@ router.post("/", async(req, res) => {
 // Get: Obtener los datos de todos los usuarios
 router.get("/", async(req, res) => {
     try {
-        const usuarios = await Usuario.find();
+        const usuarios = await Usuario.find().populate("certificaciones");
         res.json(usuarios);
     }catch(error){
         res.status(400).json({mensajeError: error.message});
