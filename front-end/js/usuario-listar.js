@@ -1,32 +1,54 @@
-const tablaUsuarios = document.getElementById("tblUsuarios").querySelector("tbody");
+// js/usuario-listar.js
 
-async function cargarTabla() {
-    fetch("http://localhost:3000/usuarios", {
-        method: "GET",
-        headers: {
-            "Content-Type": "Application/json"
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Referencias a la tabla
+    const tbody = document.querySelector("#tblUsuarios tbody");
+
+    async function cargarUsuarios() {
+        try {
+            // 2. Llamar al back-end (GET /usuarios)
+            const respuesta = await fetch("http://localhost:3000/usuarios");
+            const data = await respuesta.json();
+
+            // 3. Limpiar el tbody por si acaso
+            tbody.innerHTML = "";
+
+            // 4. Manejar caso sin usuarios
+            if (!Array.isArray(data) || data.length === 0) {
+                const fila = document.createElement("tr");
+                const celda = document.createElement("td");
+                celda.colSpan = 3;
+                celda.textContent = "No hay usuarios registrados aún.";
+                fila.appendChild(celda);
+                tbody.appendChild(fila);
+                return;
+            }
+
+            // 5. Recorrer los usuarios y agregarlos a la tabla
+            data.forEach(usuario => {
+                const fila = document.createElement("tr");
+
+                fila.innerHTML = `
+                    <td>${usuario.correo}</td>
+                    <td>${usuario.cedula}</td>
+                    <td>${usuario.nombre}</td>
+                `;
+
+                tbody.appendChild(fila);
+            });
+
+        } catch (error) {
+            console.error("Error cargando usuarios:", error);
+
+            const fila = document.createElement("tr");
+            const celda = document.createElement("td");
+            celda.colSpan = 3;
+            celda.textContent = "Error al cargar los usuarios.";
+            fila.appendChild(celda);
+            tbody.appendChild(fila);
         }
-    }).then(response => Response.json()
-).then(listaUsuarios => {
-    tablaUsuarios.innerHTML = ""; // Limpiar la tabla
-    listaUsuarios.forEach(usuario => {
-        const fila = document.createElement("tr");
-        // ` : Comilla francesa,permite utilizar variables o expresiones en un string. 
-        // Por ejemplo dentro de la fila crear la celda (td) con los datso traidos de la BD (interpolacion de 
-        // variables: Insertar variables o expresiones directamente dentro de una cadena utilizadno la sintaxis ${})
-        fila.innerHTML = `
-        <td> ${usuario.nombre}</td>
-        <td> ${usuario.correo}</td>
-        <td> ${usuario.cedula}</td>
-        <td> ${usuario.celular}</td>
-        `;
-        tablaUsuarios.appendChild(fila); // Agregar la fila creada en la tabla
-    })
-})
+    }
 
-    .catch(error => {
-        console.log(error);
-    });
-}
-
-cargarTabla();
+    // 6. Llamar la función apenas cargue la página
+    cargarUsuarios();
+});
