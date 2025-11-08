@@ -79,5 +79,45 @@ router.delete("/eliminar-por-cedula", async (req, res) => {
     }
 });
 
+/*
+http://localhost:3000/certificaciones
+{
+  "id": "686f469f0bf135cc95b824d5"
+}
+*/
+
+// Endpoint PUT: Actualizar el usuario al asignar una certificación
+router.put("/agregar-certificacion", async(req, res) => {
+    const {cedula, certificacionId} = req.body;
+
+    if(!cedula){
+        return res.status(400).json({mensajeError: "El campo 'cédula' es obligatorio"});
+    }
+    if(!certificacionId){
+        return res.status(400).json({mensajeError: "El campo 'id de la certificación' es obligatorio"});
+    }
+    try{
+        // Verificar que la certificación existe
+        const certificacion = await Certificacion.findById(certificacionId);
+        if (!certificacion){
+            return res.status(404).json({mensajeError: "Certificación no encontrada"});
+        }
+
+        // Buscar el usuario y agregar la certificación si no está repetida
+        const usuario = await Usuario.findOne({cedula});
+        if (!usuario){
+            return res.status(404).json({mensajeError: "Usuario no encontrado"});
+        }
+        if(!usuario.certificaciones.includes(certificacionId)){
+            usuario.certificaciones.push(certificacionId);
+            await usuario.save();
+        }
+        res.status(200).json({mensaje: "Certificación asociada al usuario"});
+    } catch (error){
+        res.status(500).json({mensajeError: "Error al agregar la certificación", error: error.message}); 
+    }
+});
+
+
 // Exportar la ruta
 module.exports = router;
