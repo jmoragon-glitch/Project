@@ -16,5 +16,5 @@ const schemaCertificacion = new mongoose.Schema({
 });
 
 const Certificacion = mongoose.model("Certificacion", schemaCertificacion);
-module.exports = Certificacion; // Exportar el modelo, para poder utilizarlo en el back-end  
+module.exports = Certificacion; // Exportar el modelo, para poder utilizarlo en el back-end
 

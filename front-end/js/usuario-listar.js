@@ -23,19 +23,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 tbody.appendChild(fila);
                 return;
             }
+            
 
             // 5. Recorrer los usuarios y agregarlos a la tabla
-            data.forEach(usuario => {
-                const fila = document.createElement("tr");
+data.forEach(usuario => {
+    const fila = document.createElement("tr");
 
-                fila.innerHTML = `
-                    <td>${usuario.correo}</td>
-                    <td>${usuario.cedula}</td>
-                    <td>${usuario.nombre}</td>
-                `;
+    // si el usuario tiene certificaciones, las convertimos en texto
+    let listaCertificaciones = "—"; // por defecto guion si no tiene
+    if (Array.isArray(usuario.certificaciones) && usuario.certificaciones.length > 0) {
+        listaCertificaciones = usuario.certificaciones
+            .map(cert => cert.nombre)  // obtener solo el nombre
+            .join(", ");                // unirlos con coma
+    }
 
-                tbody.appendChild(fila);
-            });
+    fila.innerHTML = `
+        <td>${usuario.nombre}</td>
+        <td>${usuario.correo}</td>
+        <td>${usuario.cedula}</td>
+        <td>${usuario.celular}</td>
+        <td>${listaCertificaciones}</td>
+    `;
+
+    tbody.appendChild(fila);
+});
+
 
         } catch (error) {
             console.error("Error cargando usuarios:", error);
